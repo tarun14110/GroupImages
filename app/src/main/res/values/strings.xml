@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Group Images</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="add_image">Add Image</string>
+    <string name="title_activity_display_image">DisplayImage</string>
+    <string name="image_information">Image Information</string>
+    <string name="yellow">Yellow</string>
+    <string name="red">Red</string>
+    <string name="green">Green</string>
+    <string name="selectColor">Select background color:</string>
+    <string name="background_color">backgroundColor</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="updateDesc">Description: </string>
+    <string name="updateDescTitle">Update Description </string>
+    <string name="updateDescPass">updateDescPass </string>
+</resources>
