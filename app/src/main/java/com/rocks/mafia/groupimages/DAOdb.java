@@ -96,7 +96,6 @@ public class DAOdb {
 
         String where = DBHelper.COLUMN_TITLE + "=? and " + DBHelper.COLUMN_DATETIME + "=?";
         String[] whereArgs = new String[] {image.getTitle(), Long.toString(image.getDatetimeLong())};
-        Log.v("RARARARRARARARARARA", where+ " " + whereArgs[0] +  " " + whereArgs[1] + "    "+image.getDatetimeLong());
         int res = database.update(DBHelper.TABLE_NAME, cv, where, whereArgs);
         Log.v("RESULT", Integer.toString(res));
 

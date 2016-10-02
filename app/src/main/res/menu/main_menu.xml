@@ -12,4 +12,10 @@
                 android:title="@string/red" />
         </menu>
     </item>
+    <item android:id="@+id/notes"
+        android:title="@string/notes" />
+    <item android:id="@+id/public_notes"
+        android:title="@string/public_notes" />
+    <item android:id="@+id/external_public_notes"
+        android:title="@string/external_public_notes" />
 </menu>

@@ -4,19 +4,15 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,9 +28,6 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.sql.Time;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -69,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         mainActivity.setBackgroundColor(backgroundColor);
 
         isStoragePermissionGranted();
+
     }
 
     @Override
@@ -87,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout mainActivity = (LinearLayout) findViewById(R.id.activity_main);
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
+        Intent intent = new Intent(this, NotesActivity.class);
         switch (item.getItemId()) {
             case R.id.green:
                 mainActivity.setBackgroundColor(Color.GREEN);
@@ -102,6 +97,21 @@ public class MainActivity extends AppCompatActivity {
                 mainActivity.setBackgroundColor(Color.YELLOW);
                 editor.putInt(getString(R.string.background_color), Color.YELLOW);
                 editor.commit();
+                return true;
+            case R.id.notes:
+                intent = new Intent(this, NotesActivity.class);
+                intent.putExtra("isSecret", "true");
+                startActivity(intent);
+                return true;
+            case R.id.public_notes:
+                intent = new Intent(this, NotesActivity.class);
+                intent.putExtra("isSecret", "partial");
+                startActivity(intent);
+                return true;
+            case R.id.external_public_notes:
+                intent = new Intent(this, NotesActivity.class);
+                intent.putExtra("isSecret", "false");
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -137,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             activeGallery();
+                            dialog.dismiss();
                         }
                     });
             dialog.findViewById(R.id.btnTakePhoto)
@@ -144,13 +155,14 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             activeTakePhoto();
+                            dialog.dismiss();
                         }
                     });
 
             // show dialog on screen
             dialog.show();
         } else {
-            Toast.makeText(getApplicationContext(), "Please Grant Permission first",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Please Grant Permission first", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -181,8 +193,9 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, RESULT_LOAD_IMAGE);
     }
 
-    @Override protected void onActivityResult(int requestCode, int resultCode,
-                                              Intent data) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case RESULT_LOAD_IMAGE:
@@ -240,8 +253,9 @@ public class MainActivity extends AppCompatActivity {
      */
     private void addItemClickListener(final ListView listView) {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override public void onItemClick(AdapterView<?> parent, View view,
-                                              int position, long id) {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
 
                 MyImage image = (MyImage) listView.getItemAtPosition(position);
                 Intent intent =
@@ -252,7 +266,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override protected void onSaveInstanceState(Bundle outState) {
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
         // Save the user's current game state
         if (mCapturedImageURI != null) {
             outState.putString("mCapturedImageURI",
@@ -262,7 +277,8 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
-    @Override protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
         // Always call the superclass so it can restore the view hierarchy
         super.onRestoreInstanceState(savedInstanceState);
 
@@ -273,21 +289,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public  boolean isStoragePermissionGranted() {
+    public boolean isStoragePermissionGranted() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.CAMERA)
                     == PackageManager.PERMISSION_GRANTED) {
-                Log.v(TAG,"Permission is granted");
+                Log.v(TAG, "Permission is granted");
                 return true;
             } else {
 
-                Log.v(TAG,"Permission is revoked");
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                Log.v(TAG, "Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 1);
                 return false;
             }
-        }
-        else { //permission is automatically granted on sdk<23 upon installation
-            Log.v(TAG,"Permission is granted");
+        } else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG, "Permission is granted");
             return true;
         }
 
@@ -297,9 +313,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
-            Log.v(TAG,"Permission: "+permissions[0]+ "was "+grantResults[0]);
-            //resume tasks needing this permission
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Log.v(TAG, "Permission: " + permissions[0] + "was " + grantResults[0]);
         }
     }
 }

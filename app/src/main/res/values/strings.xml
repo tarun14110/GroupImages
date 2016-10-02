@@ -15,4 +15,9 @@
     <string name="updateDesc">Description: </string>
     <string name="updateDescTitle">Update Description </string>
     <string name="updateDescPass">updateDescPass </string>
+    <string name="notes">Secret notes</string>
+    <string name="public_notes">Private External notes</string>
+    <string name="external_public_notes">Public External notes</string>
+    <string name="submit">Submit</string>
+    <string name="isSecret">isSecret</string>
 </resources>
